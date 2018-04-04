@@ -5,6 +5,11 @@ Check haveibeenpwned for account breaches with a list of usernames
 
 Show of breached or not, where you got breached and date of first and latest breach.
 
+Installation:
+```Shell
+pip install -r requirements.txt
+```
+
 Usage:
 ```Shell
 python hibp.py -f ~/Documents/emails.txt -s ~/Documents/result.txt -b 2
