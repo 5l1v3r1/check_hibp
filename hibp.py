@@ -29,6 +29,7 @@ except IOError:
 
 def search(account):
     breachedon = []
+
     try:
         check = requests.get('https://haveibeenpwned.com/api/v2/breachedaccount/%s' % account)
     except KeyboardInterrupt:
@@ -37,20 +38,20 @@ def search(account):
     try:
         for title in check.json():
             breachedon.append(title["Title"].encode('utf-8'))
-    except Exception:
-        pass
 
-    try:
         for breachdate in check.json():
             breachdate = breachdate["BreachDate"]
     except Exception:
         pass
+
 
     # Check status code
     if check.status_code == 404:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
     elif check.status_code == 200:
         return ('%s \033[31m[BREACHED]\033[0m %s\n\033[31m[Breached on]\033[0m %s\n') % (account.ljust(50), breachdate.rjust(20), breachedon)
+    elif check.status_code == 503:
+        print('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
     else:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
 
@@ -63,7 +64,6 @@ print('\033[94m{0[0]} {0[1]} {0[2]}\033[0m'.format(header))
 for l in accounts:
     if args.save == None:
         print(search(l.strip()))
-
     else:
         result = search(l.strip())
 
