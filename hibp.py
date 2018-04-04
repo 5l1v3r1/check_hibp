@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, requests, argparse
+import sys, requests, argparse, time
 
 if len (sys.argv) < 2:
     print('\033[31m[ERROR]\033[0m Please, provide a list'); sys.exit(1)
@@ -10,12 +10,9 @@ def parse_args():
     #Create the arguments
     parser = argparse.ArgumentParser(description='Check accounts on haveibeenpwned.com')
 
-    parser.add_argument("-f",
-                        "--file",
-                        help="Location to a list with account names or Email addresses. \
-                                Example: -f ~/Documents/accounts.txt")
-    parser.add_argument("-s", "--save", help="Save results to a file \
-                                Example: ~/Documents/result.txt")
+    parser.add_argument("-f", "--file", help="Location to a list with account names or Email addresses. Example: -f ~/Documents/accounts.txt")
+    parser.add_argument("-s", "--save", help="Save results to a file. Example: -s ~/Documents/result.txt")
+    parser.add_argument("-b", "--burst", help="Set sleep time. Sleep time of 0 can trigger Cloudflare protection and/or false positive results.")
 
     return parser.parse_args()
 
@@ -49,21 +46,30 @@ def search(account):
     if check.status_code == 404:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
     elif check.status_code == 200:
-        return ('%s \033[31m[BREACHED]\033[0m %s\n\033[31m[Breached on]\033[0m %s\n') % (account.ljust(50), breachdate.rjust(20), breachedon)
+        return ('%s \033[31m[BREACHED]\033[0m %s %s') % (account.ljust(50), breachdate.rjust(20), breachedon)
+        #return ('%s \033[31m[BREACHED]\033[0m %s\n\033[31m[Breached on]\033[0m %s\n') % (account.ljust(50), breachdate.rjust(20), breachedon)
     elif check.status_code == 503:
         print('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
     else:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
 
 
+# Set sleep time
+if args.burst == None:
+    timer = '1.5'
+else:
+    timer = float(args.burst)
+
 # Header
-header = 'Account'.ljust(50), 'Status'.ljust(20), 'Date'
+header = 'Account'.ljust(50), 'Status'.ljust(20), 'Date/breach'
 print('\033[94m{0[0]} {0[1]} {0[2]}\033[0m'.format(header))
 
 # Check accounrs
 for l in accounts:
     if args.save == None:
         print(search(l.strip()))
+        time.sleep(float(timer))
+
     else:
         result = search(l.strip())
 
