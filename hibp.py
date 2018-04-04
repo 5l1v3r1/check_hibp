@@ -12,8 +12,8 @@ def parse_args():
 
     parser.add_argument("-f", "--file", help="Location to a list with account names or Email addresses. Example: -f ~/Documents/accounts.txt")
     parser.add_argument("-s", "--save", help="Save results to a file. Example: -s ~/Documents/result.txt")
-    parser.add_argument("-b", "--burst", help="Set sleep time. Sleep time of 0 can trigger Cloudflare protection and/or false positive results.")
-    #parser.add_argument("-d", "--date", help="Set min/max. Show first or latest breach. Default: max")
+    parser.add_argument("-b", "--burst", help="Set sleep time (default: 1.5). Sleep time of 0 can trigger Cloudflare protection and/or false positive results.")
+    parser.add_argument("-c", "--check", help="Check a single account for breaches")
 
     return parser.parse_args()
 
@@ -21,8 +21,11 @@ args = parse_args()
 
 try:
     accounts = open(args.file).readlines()
-except IOError:
-    print('\033[31m[ERROR]\033[0m Cannot open this file')
+except Exception as e:
+    if args.check:
+        pass
+    else:
+        print('\033[31m[ERROR]\033[0m Cannot open this file'); sys.exit(1)
 
 
 def search(account):
@@ -74,17 +77,20 @@ else:
 header = 'Account'.ljust(50), 'Status'.ljust(15), 'First breach / Latest Breach / Breach'
 print('\033[94m{0[0]} {0[1]} {0[2]}\033[0m'.format(header))
 
-# Check accounrs
-for l in accounts:
-    if args.save == None:
-        print(search(l.strip()))
-        time.sleep(float(timer))
+if args.check == None:
+    # Check accounts
+    for l in accounts:
+        if args.save == None:
+            print(search(l.strip()))
+            time.sleep(float(timer))
 
-    else:
-        result = search(l.strip())
-        time.sleep(float(timer))
-        
-        with open(args.save, 'a+') as f:
-            print(result)
-            f.write(result + '\n')
-            f.close()
+        else:
+            result = search(l.strip())
+            time.sleep(float(timer))
+
+            with open(args.save, 'a+') as f:
+                print(result)
+                f.write(result + '\n')
+                f.close()
+else:
+    print(search(args.check))
