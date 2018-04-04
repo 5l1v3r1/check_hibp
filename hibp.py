@@ -14,8 +14,8 @@ def parse_args():
                         "--file",
                         help="Location to a list with account names or Email addresses. \
                                 Example: -f ~/Documents/accounts.txt")
-    parser.add_argument("-s", "--save", help="Save results to a file on the given location \
-                                Example: ~/Documents/")
+    parser.add_argument("-s", "--save", help="Save results to a file \
+                                Example: ~/Documents/result.txt")
 
     return parser.parse_args()
 
@@ -67,7 +67,7 @@ for l in accounts:
     else:
         result = search(l.strip())
 
-        with open(args.save + 'result.txt', 'a+') as f:
+        with open(args.save, 'a+') as f:
             print(result)
             f.write(result + '\n')
             f.close()
