@@ -66,7 +66,7 @@ def search(account):
 
 # Set sleep time
 if args.burst == None:
-    timer = '1.5'
+    timer = '2'
 else:
     timer = float(args.burst)
 
