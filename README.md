@@ -5,10 +5,12 @@ Check haveibeenpwned for account breaches with a list of usernames
 
 Shows breached or not, date of breach and where you got breached.
 
-Example:
+Usage:
 ```Shell
 python hibp.py -f ~/Documents/emails.txt -s ~/Documents/result.txt -b 2
 ```
+
+
 
 Base Code:
 ```Python
