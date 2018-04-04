@@ -46,15 +46,11 @@ def search(account):
     except Exception:
         pass
 
-
     # Check status code
     if check.status_code == 404:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
-    elif check.status_code == 400:
-        return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
     elif check.status_code == 200:
         return ('%s \033[31m[BREACHED]\033[0m %s\n\033[31m[Breached on]\033[0m %s\n') % (account.ljust(50), breachdate.rjust(20), breachedon)
-
     else:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
 
