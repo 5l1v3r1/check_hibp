@@ -3,7 +3,7 @@
 # hibp.py
 Check haveibeenpwned for account breaches with a list of usernames
 
-Shows breached or not, date of breach and where you got breached.
+Show of breached or not, where you got breached and date of first and latest breach.
 
 Usage:
 ```Shell
