@@ -1,4 +1,6 @@
-# check_hibp
+![alt text](http://leonvoerman.nl/coding/hibp.png)
+
+# hibp.py
 Check haveibeenpwned for account breaches with a list of usernames
 
 Shows breached or not, date of breach and where you got breached.
