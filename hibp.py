@@ -43,8 +43,7 @@ def search(account):
 # Check accounrs
 for l in accounts:
     if args.save == None:
-        #print(search(l.strip()))
-        result = search(l.strip())
+        print(search(l.strip()))
     else:
         result = search(l.strip())
 
