@@ -66,7 +66,7 @@ def search(account):
 
 # Set sleep time
 if args.burst == None:
-    timer = '2'
+    timer = '1.5'
 else:
     timer = float(args.burst)
 
@@ -82,7 +82,8 @@ for l in accounts:
 
     else:
         result = search(l.strip())
-
+        time.sleep(float(timer))
+        
         with open(args.save, 'a+') as f:
             print(result)
             f.write(result + '\n')
