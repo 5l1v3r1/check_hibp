@@ -15,7 +15,7 @@ Usage:
 python hibp.py -f ~/Documents/emails.txt -s ~/Documents/result.txt -b 2
 ```
 
-Features:
+Features hibp.py:
 ```Shell
 usage: hibp.py [-h] [-f FILE] [-s SAVE] [-b BURST] [-c CHECK]
 
@@ -33,6 +33,29 @@ optional arguments:
                         results.
   -c CHECK, --check CHECK
                         Check a single account for breaches
+```
+
+Features hashes.py
+```Shell
+usage: hashes.py [-h] [-f FILE] [-s SAVE] [-b BURST] [-c CHECK] [-p PASSWORD]
+
+Check passwords on haveibeenpwned.com
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE, --file FILE  Location to a list with hashes or clear-text
+                        passwords. Example: -f ~/Documents/passwords.txt
+  -s SAVE, --save SAVE  Save results to a file. Example: -s
+                        ~/Documents/result.txt
+  -b BURST, --burst BURST
+                        Set sleep time (default: 1.5). Sleep time of 0 can
+                        trigger Cloudflare protection and/or false positive
+                        results.
+  -c CHECK, --check CHECK
+                        Check a single password or hash
+  -p PASSWORD, --password PASSWORD
+                        Hash a clear-text password (MD5, SHA1, SHA-256,
+                        SHA-512)
 ```
 
 
