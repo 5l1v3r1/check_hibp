@@ -33,7 +33,6 @@ optional arguments:
                         results.
   -c CHECK, --check CHECK
                         Check a single account for breaches
-lv-laptop@lv-laptop:~/Documents/directories/programmeren/py
 ```
 
 
