@@ -53,10 +53,10 @@ def search(account):
     # Check status code
     if check.status_code == 404:
         # Not breached
-        return ('%s \033[32m[%s]\033[0m') % (account.ljust(50), u"\u2714")
+        return ('%s \033[32m[%s]\033[0m') % (account.ljust(50), 'NOT FOUND')
     elif check.status_code == 200:
         # Breached, return when and where
-        return ('%s \033[31m[%s]\033[0m %s -> %s -> %s') % (account.ljust(50), u"\u274c", breachdate.rjust(21), latestbreach, breachedon)
+        return ('%s \033[31m[%s]\033[0m %s -> %s -> %s') % (account.ljust(50), 'BREACHED', breachdate.rjust(15), latestbreach, breachedon)
 
     elif check.status_code == 503:
         print('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
