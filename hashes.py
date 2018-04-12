@@ -45,12 +45,14 @@ def search(password):
     breached = '%s seen [%s] times before' % (password, check.text)
 
     if check.status_code == 404:
-        return ('\033[32m[SECURE]\033[0m'.ljust(40) + '%s') % password
+        # Secure
+        return ('\033[32m[%s]\033[0m'.ljust(41) + '%s') % (u"\u2714", password)
     elif check.status_code == 200:
-        return ('\033[31m[BREACHED]\033[0m'.ljust(40) + '%s' % breached)
+        # Insecure
+        return ('\033[31m[%s]\033[0m'.ljust(40) % u"\u274c" + '%s' % breached)
     else:
         # Most likely an error, return secure
-        return ('\033[32m[SECURE]\033[0m'.ljust(40) + '%s') % password
+        return ('\033[32m[%s]\033[0m'.ljust(41) % u"\u2714" + '%s' % password)
 
 # Set sleep time
 if args.burst == None:

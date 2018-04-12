@@ -22,7 +22,7 @@ args = parse_args()
 try:
     accounts = open(args.file).readlines()
 except Exception as e:
-    if args.check:
+    if args.check: # if -c option, don't open a file or error
         pass
     else:
         print('\033[31m[ERROR]\033[0m Cannot open this file'); sys.exit(1)
@@ -42,12 +42,7 @@ def search(account):
         for title in check.json():
             breachedon.append(title["Title"].encode('utf-8'))
 
-        #for breachdate in check.json():
-        #    breachdate = breachdate["BreachDate"]
-
-
         for date in check.json():
-        #    breachdate = date["BreachDate"]
             dates.append(date["BreachDate"].encode('utf-8'))
             latestbreach = max(dates) # Latest breach
             breachdate = min(dates) # first breach
@@ -57,15 +52,16 @@ def search(account):
 
     # Check status code
     if check.status_code == 404:
-        return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
+        # Not breached
+        return ('%s \033[32m[%s]\033[0m') % (account.ljust(50), u"\u2714")
     elif check.status_code == 200:
-        return ('%s \033[31m[BREACHED]\033[0m %s -> %s -> %s') % (account.ljust(50), breachdate.rjust(15), latestbreach, breachedon)
+        # Breached, return when and where
+        return ('%s \033[31m[%s]\033[0m %s -> %s -> %s') % (account.ljust(50), u"\u274c", breachdate.rjust(21), latestbreach, breachedon)
 
     elif check.status_code == 503:
         print('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
     else:
         return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
-
 
 # Set sleep time
 if args.burst == None:
