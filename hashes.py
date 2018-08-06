@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import requests, hashlib, argparse, time, sys
+from tqdm import tqdm
 
 def parse_args():
     #Create the arguments
@@ -46,13 +47,13 @@ def search(password):
 
     if check.status_code == 404:
         # Secure
-        return ('\033[32m[%s]\033[0m'.ljust(36) + '%s') % ("SECURE", password)
+        tqdm.write('\033[32m%s\033[0m %s' % ("[SECURE]".ljust(30), password))
     elif check.status_code == 200:
         # Insecure
-        return ('\033[31m[%s]\033[0m'.ljust(34) % "BREACHED" + '%s' % breached)
+        tqdm.write('\033[31m%s\033[0m %s' % ("[BREACHED]", breached))
     else:
         # Most likely an error, return secure
-        return ('\033[32m[%s]\033[0m'.ljust(36) % "SECURE" + '%s' % password)
+        tqdm.write('\033[32m%s\033[0m %s' % ("[SECURE]".ljust(30), password))
 
 # Set sleep time
 if args.burst == None:
@@ -67,18 +68,20 @@ print('\033[94m{0[0]} {0[1]}\033[0m'.format(header))
 
 if args.check == None:
     # Check passwords
-    for l in passwords:
-        if args.save == None:
-            print(search(l.strip()))
-            time.sleep(float(timer))
+    with tqdm(total=(len(passwords)), desc='Progress') as bar:
+        for l in passwords:
+            if args.save == None:
+                search(l.strip())
+                bar.update(1)
+                time.sleep(float(timer))
 
-        else:
-            result = search(l.strip())
-            time.sleep(float(timer))
+            else:
+                result = search(l.strip())
+                time.sleep(float(timer))
 
-            with open(args.save, 'a+') as f:
-                print(result)
-                f.write(result.encode('utf-8') + '\n')
-                f.close()
+                with open(args.save, 'a+') as f:
+                    print(result)
+                    f.write(result.encode('utf-8') + '\n')
+                    f.close()
 else:
     print(search(args.check))

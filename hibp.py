@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import sys, requests, argparse, time
+from tqdm import tqdm
 
 if len (sys.argv) < 2:
     print('\033[31m[ERROR]\033[0m Please, provide a list'); sys.exit(1)
@@ -32,18 +33,17 @@ def search(account):
     breachedon = []
     dates = []
 
-
     try:
         check = requests.get('https://haveibeenpwned.com/api/v2/breachedaccount/%s' % account)
     except KeyboardInterrupt:
-        print('Stopped...')
+        tqdm.write('Stopped...'); sys.exit(0)
 
     try:
         for title in check.json():
-            breachedon.append(title["Title"].encode('utf-8'))
+            breachedon.append(title["Title"])
 
         for date in check.json():
-            dates.append(date["BreachDate"].encode('utf-8'))
+            dates.append(date["BreachDate"])
             latestbreach = max(dates) # Latest breach
             breachdate = min(dates) # first breach
 
@@ -53,15 +53,15 @@ def search(account):
     # Check status code
     if check.status_code == 404:
         # Not breached
-        return ('%s \033[32m[%s]\033[0m') % (account.ljust(50), 'NOT FOUND')
+        tqdm.write('%s \033[32m[%s]\033[0m' % (account.ljust(50), 'NOT FOUND'))
     elif check.status_code == 200:
         # Breached, return when and where
-        return ('%s \033[31m[%s]\033[0m %s -> %s -> %s') % (account.ljust(50), 'BREACHED', breachdate.rjust(15), latestbreach, breachedon)
+        tqdm.write('%s \033[31m[%s]\033[0m %s -> %s -> %s' % (account.ljust(50), 'BREACHED', breachdate.rjust(15), latestbreach, breachedon))
 
     elif check.status_code == 503:
-        print('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
+        tqdm.write('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
     else:
-        return ('%s \033[32m[NOT FOUND]\033[0m') % account.ljust(50)
+        tqdm.write('%s \033[32m[NOT FOUND]\033[0m' % account.ljust(50))
 
 # Set sleep time
 if args.burst == None:
@@ -75,18 +75,19 @@ print('\033[94m{0[0]} {0[1]} {0[2]}\033[0m'.format(header))
 
 if args.check == None:
     # Check accounts
-    for l in accounts:
-        if args.save == None:
-            print(search(l.strip()))
-            time.sleep(float(timer))
+    with tqdm(total=(len(accounts)), desc='Progress') as bar:
+        for l in accounts:
+            if args.save == None:
+                search(l.strip())
+                bar.update(1)
+                time.sleep(float(timer))
+            else:
+                result = search(l.strip())
+                time.sleep(float(timer))
 
-        else:
-            result = search(l.strip())
-            time.sleep(float(timer))
-
-            with open(args.save, 'a+') as f:
-                print(result)
-                f.write(result + '\n')
-                f.close()
+                with open(args.save, 'a+') as f:
+                    print(result)
+                    f.write(result + '\n')
+                    f.close()
 else:
     print(search(args.check))
