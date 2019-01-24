@@ -21,11 +21,12 @@ if args.password:
     header = 'Type'.ljust(20), 'Hash'
     print('\033[94m{0[0]} {0[1]}\033[0m'.format(header))
 
-    # Hash it
-    print('MD5'.ljust(21) + hashlib.md5(args.password).hexdigest())
-    print('SHA-1'.ljust(21) + hashlib.sha1(args.password).hexdigest())
-    print('SHA-256'.ljust(21) + hashlib.sha256(args.password).hexdigest())
-    print('SHA-512'.ljust(21) + hashlib.sha512(args.password).hexdigest())
+    # Hash it (unsalted)
+    a = args.password.encode('utf-8') # Encode for python3 -__-
+    print('MD5'.ljust(21) + hashlib.md5(a).hexdigest())
+    print('SHA-1'.ljust(21) + hashlib.sha1(a).hexdigest())
+    print('SHA-256'.ljust(21) + hashlib.sha256(a).hexdigest())
+    print('SHA-512'.ljust(21) + hashlib.sha512(a).hexdigest())
     sys.exit(0) # Done
 
 
