@@ -17,7 +17,6 @@ class MainWindow(Tk):
 
         self.options = {
             'ufile' : StringVar(),
-            'pfile' : StringVar(),
             'username' : StringVar(),
             'password' : StringVar(),
         }
@@ -34,15 +33,8 @@ class MainWindow(Tk):
         Entry(settings, textvariable = self.options['ufile'], width = 30).grid(row = 0, column = 2)
         browser_username_file = Button(settings, text = '...', command = self.file_browser_username, width = 5).grid(row = 0, column = 3)
 
-        Label(settings, text = 'Password list').grid(row = 1, column = 1)
-        Entry(settings, textvariable = self.options['pfile'], width = 30).grid(row = 1, column = 2)
-        browse_password_file = Button(settings, text = '...', command = self.file_browser_password, width = 5).grid(row = 1, column = 3)
-
-        Label(settings, text = 'Username').grid(row = 2, column = 1)
-        Entry(settings, textvariable = self.options['username'], width = 30, show = '*').grid(row = 2, column = 2)
-
-        Label(settings, text = 'Password').grid(row = 3, column = 1)
-        Entry(settings, textvariable = self.options['password'], width = 30, show = '*').grid(row = 3, column = 2)
+        Label(settings, text = 'Username').grid(row = 1, column = 1)
+        Entry(settings, textvariable = self.options['username'], width = 30, show = '*').grid(row = 1, column = 2)
 
         result_frame = LabelFrame(self, text = 'Result Frame', height = 400, width = 1400)
         result_frame.grid(row = 1, column = 1, columnspan = 3)
