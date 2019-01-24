@@ -12,6 +12,7 @@ class MainWindow(Tk):
         self.resizable(0,0)
         #self.style = Style()
         #self.style.theme_use("clam")
+        self.configure(background = 'black')
         icon = PhotoImage(file='icon.png')
         self.tk.call('wm', 'iconphoto', self._w, icon)
 
@@ -21,26 +22,32 @@ class MainWindow(Tk):
             'password' : StringVar(),
         }
 
-        # Start time thread
-        #time_thread = threading.Thread(target=self.date_time)
-        #time_thread.daemon = True
-        #time_thread.start()
-
         settings = LabelFrame(self, text = 'Data')
         settings.grid(row = 0, column = 1, columnspan = 4)
+
+        photo = PhotoImage(file='hibp.png')
+        #photo = photo.zoom(2)
+        photo = photo.subsample(2)
+        label = Label(self, image=photo, background = 'black')
+        label.image = photo # keep a reference!
+        label.grid(row = 0, column = 3)
+
+        label2 = Label(self, image=photo, background = 'black')
+        label2.image = photo # keep a reference!
+        label2.grid(row = 0, column = 1)
 
         Label(settings, text = 'Username list').grid(row = 0, column = 1)
         Entry(settings, textvariable = self.options['ufile'], width = 30).grid(row = 0, column = 2)
         browser_username_file = Button(settings, text = '...', command = self.file_browser_username, width = 5).grid(row = 0, column = 3)
 
         Label(settings, text = 'Username').grid(row = 1, column = 1)
-        Entry(settings, textvariable = self.options['username'], width = 30, show = '*').grid(row = 1, column = 2)
+        Entry(settings, textvariable = self.options['username'], width = 30).grid(row = 1, column = 2)
 
         result_frame = LabelFrame(self, text = 'Result Frame', height = 400, width = 1400)
         result_frame.grid(row = 1, column = 1, columnspan = 3)
 
         Label(result_frame, text = 'Result').grid(row = 0, column = 1)
-        self.options['result'] = Listbox(result_frame, width = 120, height = 30)
+        self.options['result'] = Listbox(result_frame, width = 170, height = 30)
         self.options['result'].grid(row = 1, column = 1)
         #self.options['result'].bind("<Double-Button-1>", self.drop_to_shell)
 
@@ -77,12 +84,12 @@ class MainWindow(Tk):
         if check.status_code == 404:
             # Not breached
             data = '%s [%s]' % (account.ljust(50), 'NOT FOUND')
-            tqdm.write(data)
+            #tqdm.write(data)
             self.options['result'].insert(END, data)
         elif check.status_code == 200:
             # Breached, return when and where
             data = '%s [%s] %s -> %s -> %s' % (account.ljust(50), 'BREACHED', breachdate.rjust(15), latestbreach, breachedon)
-            tqdm.write(data)
+            #tqdm.write(data)
             self.options['result'].insert(END, data)
 
         elif check.status_code == 503:
@@ -97,10 +104,20 @@ class MainWindow(Tk):
         run_thread.start()
 
     def run(self):
-        f = self.options['ufile'].get()
-        print(f)
-        accounts = open(f).readlines()
-        #password = open(self.options['pfile'].get().readlines())
+        accounts = []
+        if self.options['username'].get() and self.options['ufile'].get():
+            accounts.append(self.options['username'].get())
+            f = self.options['ufile'].get()
+            for l in open(f).readlines():
+                accounts.append(l)
+
+        if not self.options['username'].get():
+            f = self.options['ufile'].get()
+            for l in open(f).readlines():
+                accounts.append(l)
+        else:
+            accounts = [self.options['username'].get()]
+
         with tqdm(total=(len(accounts)), desc='Progress') as bar:
             for l in accounts:
                 self.search(l.strip())
