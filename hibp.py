@@ -12,9 +12,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Check accounts on haveibeenpwned.com')
 
     parser.add_argument("-f", "--file", help="Location to a list with account names or Email addresses. Example: -f ~/Documents/accounts.txt")
-    parser.add_argument("-s", "--save", help="Save results to a file. Example: -s ~/Documents/result.txt")
+    parser.add_argument("-s", "--save-to-file", help="Save results to a file (its recommanded to be .csv format). Example: -s ~/result.csv")
     parser.add_argument("-b", "--burst", help="Set sleep time (default: 1.5). Sleep time of 0 can trigger Cloudflare protection and/or false positive results.")
     parser.add_argument("-c", "--check", help="Check a single account for breaches")
+    parser.add_argument("-o", "--breached-only", action="store_true", help="Show only if breach was found")
 
     return parser.parse_args()
 
@@ -53,15 +54,31 @@ def search(account):
     # Check status code
     if check.status_code == 404:
         # Not breached
-        tqdm.write('%s \033[32m[%s]\033[0m' % (account.ljust(50), 'NOT FOUND'))
+        if args.breached_only == False:
+            tqdm.write('%s \033[32m[%s]\033[0m' % (account.ljust(50), 'NOT FOUND'))
+            # Write to file if --save-to-file is given
+            if args.save_to_file:
+                with open(args.save_to_file, 'a+') as f:
+                    f.write('%s,[NOT FOUND],-,-,-' % account + '\n')
+                    f.close()
     elif check.status_code == 200:
         # Breached, return when and where
         tqdm.write('%s \033[31m[%s]\033[0m %s -> %s -> %s' % (account.ljust(50), 'BREACHED', breachdate.rjust(15), latestbreach, breachedon))
+        if args.save_to_file:
+            with open(args.save_to_file, 'a+') as f:
+                f.write('%s,[%s],%s,%s,%s' % (account,'BREACHED',breachdate,latestbreach,breachedon) + '\n')
+                f.close()
 
     elif check.status_code == 503:
         tqdm.write('\033[31m[ERROR]\033[0m Limit reached, temporarily banned by Cloudflare. Exiting....'); sys.exit(1)
     else:
-        tqdm.write('%s \033[32m[NOT FOUND]\033[0m' % account.ljust(50))
+        if not args.breached_only:
+            tqdm.write('%s \033[32m[NOT FOUND]\033[0m' % account.ljust(50))
+            # Write to file if --save-to-file is given
+            if args.save_to_file:
+                with open(args.save_to_file, 'a+') as f:
+                    f.write('%s,[NOT FOUND],-,-,-' % account + '\n')
+                    f.close()
 
 # Set sleep time
 if args.burst == None:
@@ -73,21 +90,19 @@ else:
 header = 'Account'.ljust(50), 'Status'.ljust(15), 'First breach / Latest Breach / Breach'
 print('\033[94m{0[0]} {0[1]} {0[2]}\033[0m'.format(header))
 
+if args.save_to_file:
+    # Write to file if --save-to-file is given
+    if args.save_to_file:
+        with open(args.save_to_file, 'a+') as f:
+            f.write('Account,Status,First breach,Latest breach,Breach' + '\n')
+            f.close()
+
 if args.check == None:
     # Check accounts
     with tqdm(total=(len(accounts)), desc='Progress') as bar:
         for l in accounts:
-            if args.save == None:
-                search(l.strip())
-                bar.update(1)
-                time.sleep(float(timer))
-            else:
-                result = search(l.strip())
-                time.sleep(float(timer))
-
-                with open(args.save, 'a+') as f:
-                    print(result)
-                    f.write(result + '\n')
-                    f.close()
+            search(l.strip())
+            bar.update(1)
+            time.sleep(float(timer))
 else:
     print(search(args.check))
