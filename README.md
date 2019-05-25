@@ -1,4 +1,4 @@
-![alt text](http://leonvoerman.nl/coding/hibp.png)
+![alt text](https://leonvoerman.nl/wp-content/uploads/2019/04/hibp_erasmus.png)
 
 # hibp.py
 Check haveibeenpwned for account breaches with a list of usernames
